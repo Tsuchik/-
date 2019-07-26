@@ -48,7 +48,7 @@
                 <ImageBrush ImageSource="Resources/BlackFrame02.png"/>
             </TextBox.Background>
         </TextBox>
-        <Button HorizontalAlignment="Left" Margin="45,285,0,0" Width="185" Height="45" Click="Button_Click_1" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="切り出し開始"/>
+        <Button x:Name="Button3" HorizontalAlignment="Left" Margin="45,290,0,0" Width="185" Height="45" Click="Button_Click_1" VerticalAlignment="Top" HorizontalContentAlignment="Center" Content="タグ＋切り出しポイント" IsEnabled="False"/>
         <Button x:Name="Button1" Content="" HorizontalAlignment="Left" Height="37" Margin="160,188,0,0" VerticalAlignment="Top" Width="95" Click="Button_Click" HorizontalContentAlignment="Left" BorderBrush="{x:Null}">
             <Button.Background>
                 <ImageBrush ImageSource="Resources/RokugaKaishi.png" Stretch="Uniform"/>
@@ -192,7 +192,7 @@
         <RadioButton x:Name="radioButton7" Content="NW Cam + HS Cam (x 4)" HorizontalAlignment="Left" Margin="220,102,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="radioButton8" Content="NW Cam + HS Cam (x 5)" HorizontalAlignment="Left" Margin="220,120,0,0" VerticalAlignment="Top"/>
         <RadioButton x:Name="radioButton9" Content="NW Cam + HS Cam (x10)" HorizontalAlignment="Left" Margin="220,138,0,0" VerticalAlignment="Top"/>
-        <Button Content="切り出し停止" HorizontalAlignment="Left" Margin="295,285,0,0" VerticalAlignment="Top" Width="185" Height="45" Click="Button_Click_7"/>
+        <Button x:Name="Button4" Content="切出し停止" HorizontalAlignment="Left" Margin="295,285,0,0" VerticalAlignment="Top" Width="185" Height="45" Click="Button_Click_7" IsEnabled="False"/>
         <TextBlock HorizontalAlignment="Left" Height="164" Margin="385,586,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="170">
             <TextBlock.Background>
                 <ImageBrush ImageSource="Resources/BlackFrame02.png" Stretch="None"/>

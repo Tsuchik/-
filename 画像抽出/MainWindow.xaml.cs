@@ -80,6 +80,8 @@ namespace 画像抽出
         public int cnt7 = 0;
         public int cnt8 = 1;
         public int cnt9 = 0;
+        public int cnt10 = 0;
+        public int cnt15 = 0;
         public int kiridashi_cnt1 = 1;
         public int start_seconds;
         public int stop_seconds;
@@ -111,8 +113,6 @@ namespace 画像抽出
         public MainWindow()
         {
             InitializeComponent();
-
-
 
 
             //TagDateフォルダが作成されているかチェックを行う。なければ作成する。
@@ -249,75 +249,244 @@ namespace 画像抽出
                 }
                 else if (radioButton2.IsChecked == true) //HSカメラ（×２）録画開始の場合
                 {
-                    // hWndc9のハンドルを取り出すメソッドを呼び出し
-                    IntPtr hWndc9 = Multi_Video_Handle9(); 
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 2;
 
-                    IntPtr hWndc10 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "フレームレート");
-                    System.Diagnostics.Trace.WriteLine("フレームレート：" + hWndc10);
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
 
-                    IntPtr hWndc11 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.COMBOBOX.app.0.fb11c8_r17_ad1", "");
-                    System.Diagnostics.Trace.WriteLine("300FPS：" + hWndc11);
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 2;
 
-                    SendMessage(hWndc11, CB_SELSTRING, -1, "120 FPS (640x360)"); //ComboBox 120FPS選択
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
 
-                    PostMessage(hWndc10, BM_CLICK, 0, 0); //フレームレートボタン押下
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 2;
 
-                    System.Threading.Thread.Sleep(10000);
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
 
-                    // hWndc6のハンドルを取り出すメソッドを呼び出し
-                    IntPtr hWndc6 = Multi_Video_Handle6();
-
-                    IntPtr hWndc7 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "REC START");
-                    System.Diagnostics.Trace.WriteLine("REC START_" + hWndc7);
-
-                    PostMessage(hWndc7, BM_CLICK, 0, 0);  //REC STARTボタン押下
+                    }
                 }
                 else if (radioButton3.IsChecked == true) //HSカメラ（×４）録画開始の場合
                 {
-                    MessageBox.Show("HS Cam(x4)は現在録画できません。");
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 4;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 4;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 4;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
                 }
                 else if (radioButton4.IsChecked == true) //HSカメラ（×５）録画開始の場合
                 {
-                    MessageBox.Show("HS Cam(x5)は現在録画できません。");
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
                 }
                 else if (radioButton5.IsChecked == true) //HSカメラ（×１０）録画開始の場合
                 {
-                    MessageBox.Show("HS Cam(x10)は現在録画できません。");
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 10;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 10;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 10;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
                 }
                 else if (radioButton6.IsChecked == true)
                 {
-                    // hWndc9のハンドルを取り出すメソッドを呼び出し
-                    IntPtr hWndc9 = Multi_Video_Handle9();
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 2;
 
-                    IntPtr hWndc10 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "フレームレート");
-                    System.Diagnostics.Trace.WriteLine("フレームレート：" + hWndc10);
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
 
-                    IntPtr hWndc11 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.COMBOBOX.app.0.fb11c8_r17_ad1", "");
-                    System.Diagnostics.Trace.WriteLine("300FPS：" + hWndc11);
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 2;
 
-                    SendMessage(hWndc11, CB_SELSTRING, -1, "120 FPS (640x360)"); //ComboBox 120FPS選択
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
 
-                    PostMessage(hWndc10, BM_CLICK, 0, 0); //フレームレートボタン押下
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 2;
 
-                    System.Threading.Thread.Sleep(10000);
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
 
-                    // hWndc6のハンドルを取り出すメソッドを呼び出し
-                    IntPtr hWndc6 = Multi_Video_Handle6();
-
-                    IntPtr hWndc7 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "REC START");
-                    System.Diagnostics.Trace.WriteLine("REC START_" + hWndc7);
-
-                    PostMessage(hWndc7, BM_CLICK, 0, 0);  //REC STARTボタン押下
+                    }
 
                     System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
 
                     // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
 
+                }
+                else if (radioButton7.IsChecked == true)
+                {
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 4;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 4;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 4;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+
+                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+
+                    // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
+                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
 
                 }
+                else if (radioButton8.IsChecked == true)
+                {
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 5;
 
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
 
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+
+                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+
+                    // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
+                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
+
+                }
+                else if (radioButton9.IsChecked == true)
+                {
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 10;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 10;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 10;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+
+                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+
+                    // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
+                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
+
+                }
 
                 string filePath1 = @"C:\TagAdding\TagDate\genzaijikoku.txt";
 
@@ -335,6 +504,8 @@ namespace 画像抽出
 
                 Button2.IsEnabled = true; //録画停止ボタンを活性化
                 Button1.IsEnabled = false; //録画開始ボタンを非活性化
+                Button3.IsEnabled = true; //切り出し開始ボタンを活性化
+                Button4.IsEnabled = false; //切り出し停止ボタンを非活性化
 
                 // 全てのradioButtonを録画停止までは押せなくする
                 radioButton1.IsEnabled = false;
@@ -364,73 +535,83 @@ namespace 画像抽出
             }
             else if (radioButton1.IsChecked == true)
             {
-                DateTime dt2 = DateTime.Now;
 
-                filePath2 = @"C:\TagAdding\TagDate\";
+                nwcam_seconds_calculation();
 
-                TimeSpan interval = dt2 - dt1;
-
-                MessageBox.Show(dt1.ToString());
-                MessageBox.Show(dt2.ToString());
-
-                int seconds = interval.Seconds;
-                int minutes = interval.Minutes;
-                int hours = interval.Hours;
-
-                TimeSpan ts1 = new TimeSpan(hours, minutes, seconds);
-
-                if (cnt == 0)
-                {
-                    now = dt1.ToString("yyyyMMddHHmmss");
-
-                }
-
-                sw2 = new StreamWriter(filePath2 + now + ".txt", true, Encoding.UTF8);
-                cnt++;
-                
-                
-                sw2.Write(ts1 + "…");
-
-                string textValue = textBox1.Text;
-                MessageBox.Show(textValue);
-
-                sw2.Write(textValue);
-                sw2.Write(Environment.NewLine);
-                sw2.Close();
-
-                // 動画切り出し開始ポイント処理
-                filePath3 = @"C:\TagAdding\Kiridashi\";
-
-                start_seconds = interval.Seconds + (interval.Minutes * 60) + (interval.Hours * 3600);
-
-                sw3 = new StreamWriter(filePath3 + now + "-Kiridashi.txt", true, Encoding.UTF8);
-
-                sw3.Write("Kiridashi-" + kiridashi_cnt1 + "|start|" + start_seconds);
-                sw3.Close();
+                nwcam_kiridashi_time();
 
             }
             else if (radioButton2.IsChecked == true)
             {
-                MessageBox.Show("HS Cam(x2)が選択されています。");
-
                 n = 2;
 
-                seconds_calculation(n);
-
+                hscam_seconds_calculation(n);
 
             }
             else if (radioButton3.IsChecked == true)
             {
-                MessageBox.Show("HS Cam(x4)が選択されています。");
+                n = 4;
+
+                hscam_seconds_calculation(n);
+
             }
             else if (radioButton4.IsChecked == true)
             {
-                MessageBox.Show("HS Cam(x5)が選択されています。");
+                n = 5;
+
+                hscam_seconds_calculation(n);
+
             }
             else if (radioButton5.IsChecked == true)
             {
-                MessageBox.Show("HS Cam(x10)が選択されています。");
+                n = 10;
+
+                hscam_seconds_calculation(n);
+
             }
+            else if (radioButton6.IsChecked == true)
+            {
+                nwcam_seconds_calculation();
+
+                nwcam_kiridashi_time();
+
+                n = 2;
+
+                hscam_seconds_calculation(n);
+            }
+            else if (radioButton7.IsChecked == true)
+            {
+                nwcam_seconds_calculation();
+
+                nwcam_kiridashi_time();
+
+                n = 4;
+
+                hscam_seconds_calculation(n);
+            }
+            else if (radioButton8.IsChecked == true)
+            {
+                nwcam_seconds_calculation();
+
+                nwcam_kiridashi_time();
+
+                n = 5;
+
+                hscam_seconds_calculation(n);
+            }
+            else if (radioButton9.IsChecked == true)
+            {
+                nwcam_seconds_calculation();
+
+                nwcam_kiridashi_time();
+
+                n = 10;
+
+                hscam_seconds_calculation(n);
+            }
+
+            //Button4.IsEnabled = true; //切り出し停止ボタンを活性化
+            //Button3.IsEnabled = false; //切り出し開始ボタンを非活性化
         }
 
 
@@ -500,10 +681,8 @@ namespace 画像抽出
         }
 
 
-        private void Button_Click_3(object sender, RoutedEventArgs e) //"録画停止+タグ付停止"ボタン押下時の処理
+        private void Button_Click_3(object sender, RoutedEventArgs e) //"録画停止"ボタン押下時の処理
         {
-
-
             if (cnt == 0) //タグファイルが生成されていない状態で録画停止ボタンが押された場合の処理
             {
                 string message = "タグファイルが作成されていません。録画停止しますか？";
@@ -514,80 +693,131 @@ namespace 画像抽出
 
                 if (result == MessageBoxResult.Yes) //タグファイル未作成+録画停止"Yes"の場合
                 {
-                    if (radioButton1.IsChecked == true) //NWカメラ録画開始の場合
+                    //NWカメラ単独の録画停止
+                    if (radioButton1.IsChecked == true) 
                     {
                         System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
                     }
+                    //HSカメラ単独の録画停止
                     else if (radioButton2.IsChecked == true || radioButton3.IsChecked == true || radioButton4.IsChecked == true || radioButton5.IsChecked == true)
                     {
-                        // hWndc6のハンドルを取り出すメソッドを呼び出し
-                        IntPtr hWndc6 = Multi_Video_Handle6();
+                        //Windows7の場合
+                        if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) 
+                        {
+                            HS_REC_STOP_Win7();
 
-                        // REC STOPのハンドル取り出し
-                        IntPtr hWndc8 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "REC STOP");
-                        System.Diagnostics.Trace.WriteLine("REC STOP_" + hWndc8);
-
-                        // REC STOPボタンを押下
-                        PostMessage(hWndc8, BM_CLICK, 0, 0);
+                        }//Windows10(Windows8互換性)の場合
+                        else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) 
+                        {
+                            HS_REC_STOP_Win10();
+                        }
+                        //Windows10の場合
+                        else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) 
+                        {
+                            HS_REC_STOP_Win10();
+                        }
                     }
+                    else if (radioButton6.IsChecked == true || radioButton7.IsChecked == true || radioButton8.IsChecked == true || radioButton9.IsChecked == true)
+                    {
+                        // NWカメラの停止処理
+                        System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
 
+                        // HSカメラの停止処理
+                        // Windows7の場合
+                        if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1)
+                        {
+                            HS_REC_STOP_Win7();
+
+                        }
+                        // Windows10(Windows8互換性)の場合
+                        else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2)
+                        {
+                            HS_REC_STOP_Win10();
+                        }
+                        // Windows10の場合
+                        else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0)
+                        {
+                            HS_REC_STOP_Win10();
+                        }
+                    }
                     cnt = 0;
 
                     dt1 = new DateTime(2019, 1, 1, 0, 0, 00);
 
-                    Button2.IsEnabled = false; //録画停止ボタンを非活性化
-                    Button1.IsEnabled = true;  //録画再生ボタンを活性化
-
-                    // 録画停止したことにより全てのradioボタンを押せるようにする
-                    radioButton1.IsEnabled = true;
-                    radioButton2.IsEnabled = true;
-                    radioButton3.IsEnabled = true;
-                    radioButton4.IsEnabled = true;
-                    radioButton5.IsEnabled = true;
-                    radioButton6.IsEnabled = true;
-                    radioButton7.IsEnabled = true;
-                    radioButton8.IsEnabled = true;
-                    radioButton9.IsEnabled = true;
                 }
             }
             else if (cnt != 0) //初期化処理＋録画停止処理(タグファイル作成済みの場合)
             {
-
-                if (radioButton1.IsChecked == true) //NWカメラ録画開始の場合
+                // NWカメラ録画停止場合
+                if (radioButton1.IsChecked == true)
                 {
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
                 }
+                // HSカメラ録画停止の場合
                 else if (radioButton2.IsChecked == true || radioButton3.IsChecked == true || radioButton4.IsChecked == true || radioButton5.IsChecked == true)
                 {
-
-                    // hWndc6のハンドルを取り出すメソッドを呼び出し
-                    IntPtr hWndc6 = Multi_Video_Handle6();
-
-                    // REC STOPのハンドル取り出し
-                    IntPtr hWndc8 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "REC STOP");
-                    System.Diagnostics.Trace.WriteLine("REC STOP_" + hWndc8);
-
-                    // REC STOPボタンを押下
-                    PostMessage(hWndc8, BM_CLICK, 0, 0);
+                    // Windows7の場合
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        HS_REC_STOP_Win7();
+                    }
+                    // Windows10(Windows8互換性)の場合
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8との互換性)の場合
+                    {
+                        HS_REC_STOP_Win10();
+                    }
+                    // Windows10の場合
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10の場合
+                    {
+                        HS_REC_STOP_Win10();
+                    }
                 }
+                //NW+HSカメラ録画停止の場合
+                else if (radioButton6.IsChecked == true || radioButton7.IsChecked == true || radioButton8.IsChecked == true || radioButton9.IsChecked == true)
+                {
+                    // NWカメラの停止処理
+                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
 
+                    // HSカメラの停止処理
+                    // Windows7の場合
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        HS_REC_STOP_Win7();
+                    }
+                    // Windows10(Windows8互換性)の場合
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8との互換性)の場合
+                    {
+                        HS_REC_STOP_Win10();
+                    }
+                    // Windows10の場合
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10の場合
+                    {
+                        HS_REC_STOP_Win10();
+                    }
+                }
                 cnt = 0;
 
                 dt1 = new DateTime(2019, 1, 1, 0, 0, 00);
-
-                Button2.IsEnabled = false;
-                Button1.IsEnabled = true;
-
-                radioButton1.IsEnabled = true;
-                radioButton2.IsEnabled = true;
-                radioButton3.IsEnabled = true;
-                radioButton4.IsEnabled = true;
-                radioButton5.IsEnabled = true;
-                radioButton6.IsEnabled = true;
-                radioButton7.IsEnabled = true;
-                radioButton8.IsEnabled = true;
-                radioButton9.IsEnabled = true;
             }
+
+            Button2.IsEnabled = false; //録画停止ボタンを非活性化
+            Button1.IsEnabled = true;  //録画再生ボタンを活性化
+            Button3.IsEnabled = false; //切り出し開始ボタンを非活性化
+            Button4.IsEnabled = false; //切り出し停止ボタンを非活性化
+
+            // 録画停止したことにより全てのradioボタンを押せるようにする
+            radioButton1.IsEnabled = true;
+            radioButton2.IsEnabled = true;
+            radioButton3.IsEnabled = true;
+            radioButton4.IsEnabled = true;
+            radioButton5.IsEnabled = true;
+            radioButton6.IsEnabled = true;
+            radioButton7.IsEnabled = true;
+            radioButton8.IsEnabled = true;
+            radioButton9.IsEnabled = true;
+
+            kiridashi_cnt1 = 1;
+
         }
         private void RadioButton_Checked(object sender, RoutedEventArgs e)
         {
@@ -935,7 +1165,7 @@ namespace 画像抽出
 
         }
 
-        private IntPtr Multi_Video_Handle9()
+        private IntPtr Multi_Video_Handle9_Win7()
         {
             IntPtr hWnd = FindWindow(null, "Multi-Video Viewer");
             System.Diagnostics.Trace.WriteLine("①" + hWnd);
@@ -968,7 +1198,40 @@ namespace 画像抽出
             return hWndc9;
 
         }
-        private IntPtr Multi_Video_Handle6()
+
+        private IntPtr Multi_Video_Handle9_Win10()
+        {
+            IntPtr hWnd = FindWindow(null, "Multi-Video Viewer");
+            System.Diagnostics.Trace.WriteLine("①" + hWnd);
+
+            IntPtr hWndc1 = FindWindowEx(hWnd, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("②" + hWndc1);
+
+            IntPtr hWndc2 = FindWindowEx(hWndc1, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("③" + hWndc2);
+
+            IntPtr hWndc3 = FindWindowEx(hWndc2, IntPtr.Zero, "WindowsForms10.SysTabControl32.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("④" + hWndc3);
+
+            IntPtr hWndc4 = FindWindowEx(hWndc3, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "Rec");
+            System.Diagnostics.Trace.WriteLine("⑤" + hWndc4);
+
+            IntPtr hWndc5 = FindWindowEx(hWndc4, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("⑥" + hWndc5);
+
+            IntPtr hWndc6 = FindWindowEx(hWndc5, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("⑦" + hWndc6);
+
+            IntPtr hWndc7 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r9_ad1", "REC START");
+            System.Diagnostics.Trace.WriteLine("REC START_" + hWndc7);
+
+            IntPtr hWndc9 = FindWindowEx(hWndc5, hWndc6, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("⑨" + hWndc9);
+
+            return hWndc9;
+        }
+
+        private IntPtr Multi_Video_Handle6_Win7()
         {
             IntPtr hWnd = FindWindow(null, "Multi-Video Viewer");
             System.Diagnostics.Trace.WriteLine("①" + hWnd);
@@ -993,7 +1256,34 @@ namespace 画像抽出
 
             return hWndc6;
         }
-        private void seconds_calculation(int n)
+
+        private IntPtr Multi_Video_Handle6_Win10()
+        {
+            IntPtr hWnd = FindWindow(null, "Multi-Video Viewer");
+            System.Diagnostics.Trace.WriteLine("①" + hWnd);
+
+            IntPtr hWndc1 = FindWindowEx(hWnd, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("②" + hWndc1);
+
+            IntPtr hWndc2 = FindWindowEx(hWndc1, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("③" + hWndc2);
+
+            IntPtr hWndc3 = FindWindowEx(hWndc2, IntPtr.Zero, "WindowsForms10.SysTabControl32.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("④" + hWndc3);
+
+            IntPtr hWndc4 = FindWindowEx(hWndc3, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "Rec");
+            System.Diagnostics.Trace.WriteLine("⑤" + hWndc4);
+
+            IntPtr hWndc5 = FindWindowEx(hWndc4, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("⑥" + hWndc5);
+
+            IntPtr hWndc6 = FindWindowEx(hWndc5, IntPtr.Zero, "WindowsForms10.Window.8.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("⑦" + hWndc6);
+
+            return hWndc6;
+        }
+
+        private void hscam_seconds_calculation(int n)
         {
             DateTime dt2 = DateTime.Now;
 
@@ -1001,18 +1291,21 @@ namespace 画像抽出
 
             TimeSpan interval = dt2 - dt1;
 
+            int milliseconds = interval.Milliseconds * n;
+            milliseconds = milliseconds / 1000;
             int seconds = interval.Seconds * n;
             int minutes_seconds = (interval.Minutes * n) * 60;
             int hours_seconds = (interval.Hours * n) * 3600;
 
-            seconds = seconds + minutes_seconds + hours_seconds;
+            seconds = milliseconds + seconds + minutes_seconds + hours_seconds;
 
+            MessageBox.Show(milliseconds.ToString());
             MessageBox.Show(seconds.ToString());
             MessageBox.Show(interval.ToString());
 
-            while (seconds >= 360)
+            while (seconds >= 1801)
             {
-                seconds -= 360;
+                seconds -= 1800;
                 cnt2++;
             }
 
@@ -1023,14 +1316,16 @@ namespace 画像抽出
 
             if (cnt == 0)
             {
-                now = now = dt1.ToString("yyyyMMddHHmmss");
+                now = dt1.ToString("yyyyMMddHHmmss");
 
             }
 
+            // ファイル数が10未満の場合のファイル名付与(-0をつけている)
             if (cnt2 < 10)
             {
                 sw2 = new StreamWriter(filePath2 + now + "-0" + cnt2 + ".txt", true, Encoding.UTF8);
             }
+            // ファイル数が10以上の場合のファイル名付与(カウント数がそのままファイル名末尾に付く)
             else if (cnt2 >= 10)
             {
                 sw2 = new StreamWriter(filePath2 + now + "-" + cnt2 + ".txt", true, Encoding.UTF8);
@@ -1044,6 +1339,40 @@ namespace 画像抽出
             sw2.Write(ts1 + "…");
 
             string textValue = textBox1.Text;
+
+            sw2.Write(textValue);
+            sw2.Write(Environment.NewLine);
+            sw2.Close();
+        }
+
+        private void nwcam_seconds_calculation()
+        {
+            DateTime dt2 = DateTime.Now;
+
+            filePath2 = @"C:\TagAdding\TagDate\";
+
+            TimeSpan interval = dt2 - dt1;
+
+            int seconds = interval.Seconds;
+            int minutes = interval.Minutes;
+            int hours = interval.Hours;
+
+            TimeSpan ts1 = new TimeSpan(hours, minutes, seconds);
+
+            if (cnt == 0)
+            {
+                now = dt1.ToString("yyyyMMddHHmmss");
+
+            }
+
+            sw2 = new StreamWriter(filePath2 + now + ".txt", true, Encoding.UTF8);
+            cnt++;
+
+
+            sw2.Write(ts1 + "…");
+
+            string textValue = textBox1.Text;
+            //MessageBox.Show(textValue);
 
             sw2.Write(textValue);
             sw2.Write(Environment.NewLine);
@@ -1068,6 +1397,9 @@ namespace 画像抽出
             sw3.Close();
 
             kiridashi_cnt1++;
+
+            Button3.IsEnabled = true; //切り出し開始ボタンを活性化
+            Button4.IsEnabled = false; //切り出し停止ボタンを非活性化
         }
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
@@ -1134,9 +1466,14 @@ namespace 画像抽出
                     MessageBox.Show("動画切出し用フォルダが既に存在します。");
                     cnt9 = 1;
                 }
+                else if (File.Exists(output_folder))
+                {
+                    MessageBox.Show("動画切出し用フォルダと同一ファイル名が存在するため、フォルダが作成できません。");
+                    cnt9 = 1;
+                }
                 else
                 {
-                    DirectoryInfo di6 = new DirectoryInfo(output_folder);
+                    DirectoryInfo di6 = new DirectoryInfo(output_folder );
                     di6.Create();
 
                     MessageBox.Show("動画切出し用フォルダを作成しました。");
@@ -1149,6 +1486,9 @@ namespace 画像抽出
                     cnt8 = 1;
                     string outputfile_name = System.IO.Path.GetFileName(filename1);
 
+                    outputfile_name = outputfile_name.Replace(".MP4", "");
+                    outputfile_name = outputfile_name.Replace(".mp4", "");
+
                     StreamReader file5 = new StreamReader(filename2, Encoding.Default);
                     {
                         while ((line5 = file5.ReadLine()) != null)
@@ -1156,6 +1496,7 @@ namespace 画像抽出
                             string str_start_seconds = "|start|";
                             string str_stop_seconds = "|stop|";
                             string str_interval_seconds = "|interval|";
+                            string filename_add = "";
 
                             //切出し開始時間抽出関数呼び出し
                             string StartSeconds = GetStartSeconds(str_start_seconds, str_stop_seconds, line5);
@@ -1166,23 +1507,34 @@ namespace 画像抽出
                             string IntervalSeconds = GetIntervalSeconds(str_interval_seconds, line5);
                             System.Diagnostics.Trace.WriteLine(IntervalSeconds);
 
+                            string str_cnt8 = String.Format("{0:000}", cnt8);
 
-                            outputfile2 = output_folder + "\\" + outputfile_name + "-" + cnt8 + ".MP4";
+                            //ffmpegの仕様でフォルダ名+ファイル名を指定する場合にフォルダ名に空白がある場合は""で囲む必要がある
+                            outputfile2 = "\"" + output_folder + "\\" + outputfile_name + "-" + str_cnt8 + ".MP4\"" ;
+                            filename_add = "\"" + filename1 +"\"";
 
                             // ffpmegにて切出しを実施
-                            var arguments = string.Format("-i {0} -ss {1} -t {2} {3}", filename1, StartSeconds, IntervalSeconds, outputfile2);
+                            var arguments = string.Format("-ss {0} -i {1} -t {2} {3}", StartSeconds ,filename_add , IntervalSeconds, outputfile2);
+                            //MessageBox.Show(arguments);
 
-                            System.Diagnostics.Process pro = new System.Diagnostics.Process();
-                            pro.StartInfo.FileName = "ffmpeg.exe";
-                            pro.StartInfo.Arguments = arguments;
-                            System.Diagnostics.Trace.WriteLine(arguments);
-                            pro.Start();
-                            pro.WaitForExit();
+                            if (IntervalSeconds != "0")
+                            {
+                                System.Diagnostics.Process pro = new System.Diagnostics.Process();
+                                pro.StartInfo.FileName = "ffmpeg.exe";
+                                pro.StartInfo.Arguments = arguments;
+                                pro.StartInfo.CreateNoWindow = true;
+                                pro.StartInfo.UseShellExecute = false;
+                                System.Diagnostics.Trace.WriteLine(arguments);
+                                pro.Start();
+                                pro.WaitForExit();
+                            }
+
 
                             cnt8++;
                             cnt6 = 0;
                             cnt7 = 0;
                         }
+                        MessageBox.Show("動画切出し完了");
                     }
                 }
 
@@ -1235,6 +1587,162 @@ namespace 画像抽出
             return s; //戻り値(開始時の秒数)
 
 
+        }
+        private void HS_REC_START_Win7(int n)
+        {
+            // hWndc9のハンドルを取り出すメソッドを呼び出し
+            IntPtr hWndc9 = Multi_Video_Handle9_Win7();
+
+            IntPtr hWndc10 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "フレームレート");
+            //System.Diagnostics.Trace.WriteLine("フレームレート：" + hWndc10);
+
+            IntPtr hWndc11 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.COMBOBOX.app.0.fb11c8_r17_ad1", "");
+            //System.Diagnostics.Trace.WriteLine("120FPS：" + hWndc11);
+
+            if (n == 2)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "120 FPS (640x360)"); //ComboBox 120FPS選択
+            }
+            else if (n == 4)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "240 FPS (640x360)"); //ComboBox 240FPS選択
+            }
+            else if (n == 5)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "300 FPS (640x360)"); //ComboBox 300FPS選択
+            }
+            else if (n == 10)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "600 FPS (320x176)"); //ComboBox 600FPS選択
+            }
+
+
+            PostMessage(hWndc10, BM_CLICK, 0, 0); //フレームレートボタン押下
+
+            System.Threading.Thread.Sleep(10000);
+
+            // hWndc6のハンドルを取り出すメソッドを呼び出し
+            IntPtr hWndc6 = Multi_Video_Handle6_Win7();
+
+            IntPtr hWndc7 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "REC START");
+            System.Diagnostics.Trace.WriteLine("REC START_" + hWndc7);
+
+            PostMessage(hWndc7, BM_CLICK, 0, 0);  //REC STARTボタン押下
+
+        }
+        private void HS_REC_START_Win10(int n)
+        {
+            // hWndc9のハンドルを取り出すメソッドを呼び出し
+            IntPtr hWndc9 = Multi_Video_Handle9_Win10();
+
+            IntPtr hWndc10 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r9_ad1", "フレームレート");
+            System.Diagnostics.Trace.WriteLine("フレームレート：" + hWndc10);
+
+            IntPtr hWndc11 = FindWindowEx(hWndc9, IntPtr.Zero, "WindowsForms10.COMBOBOX.app.0.fb11c8_r9_ad1", "");
+            System.Diagnostics.Trace.WriteLine("120FPS：" + hWndc11);
+
+            if (n == 2)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "120 FPS (640x360)"); //ComboBox 120FPS選択
+            }
+            else if (n == 4)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "240 FPS (640x360)"); //ComboBox 240FPS選択
+            }
+            else if (n == 5)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "360 FPS (640x360)"); //ComboBox 360FPS選択
+            }
+            else if (n == 10)
+            {
+                SendMessage(hWndc11, CB_SELSTRING, -1, "600 FPS (320x176)"); //ComboBox 600FPS選択
+            }
+
+
+            PostMessage(hWndc10, BM_CLICK, 0, 0); //フレームレートボタン押下
+            
+
+            System.Threading.Thread.Sleep(10000);
+
+            // hWndc6のハンドルを取り出すメソッドを呼び出し
+            IntPtr hWndc6 = Multi_Video_Handle6_Win10();
+
+            IntPtr hWndc7 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r9_ad1", "REC START");
+            System.Diagnostics.Trace.WriteLine("REC START_" + hWndc7);
+
+            PostMessage(hWndc7, BM_CLICK, 0, 0);  //REC STARTボタン押下
+        }
+        private void HS_REC_STOP_Win7()
+        {
+            IntPtr hWndc6 = Multi_Video_Handle6_Win7();
+
+            // REC STOPのハンドル取り出し
+            IntPtr hWndc8 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r17_ad1", "REC STOP");
+            System.Diagnostics.Trace.WriteLine("REC STOP_" + hWndc8);
+
+            // REC STOPボタンを押下
+            PostMessage(hWndc8, BM_CLICK, 0, 0);
+        }
+        private void HS_REC_STOP_Win10()
+        {
+            IntPtr hWndc6 = Multi_Video_Handle6_Win10();
+
+            // REC STOPのハンドル取り出し
+            IntPtr hWndc8 = FindWindowEx(hWndc6, IntPtr.Zero, "WindowsForms10.BUTTON.app.0.fb11c8_r9_ad1", "REC STOP");
+            System.Diagnostics.Trace.WriteLine("REC STOP_" + hWndc8);
+
+            // REC STOPボタンを押下
+            PostMessage(hWndc8, BM_CLICK, 0, 0);
+        }
+
+        private void nwcam_kiridashi_time()
+        {
+            DateTime dt2 = DateTime.Now;
+
+            filePath2 = @"C:\TagAdding\TagDate\";
+
+            TimeSpan interval = dt2 - dt1;
+
+            int seconds = interval.Seconds;
+            int minutes = interval.Minutes;
+            int hours = interval.Hours;
+
+            TimeSpan ts1 = new TimeSpan(hours, minutes, seconds);
+
+            if (cnt10 == 0)
+            {
+                // 動画切り出し開始ポイント処理
+                filePath3 = @"C:\TagAdding\Kiridashi\";
+
+                start_seconds = interval.Seconds + (interval.Minutes * 60) + (interval.Hours * 3600);
+
+                sw3 = new StreamWriter(filePath3 + now + "-Kiridashi.txt", true, Encoding.UTF8);
+
+                sw3.Write("Kiridashi-" + kiridashi_cnt1 + "|start|" + start_seconds);
+                sw3.Close();
+
+                cnt10 = 1;
+                Button3.Content = "タグ+切出し停止";
+            }
+            else if (cnt10 == 1)
+            {
+                // 動画切り出し停止ポイント処理
+                filePath3 = @"C:\TagAdding\Kiridashi\";
+                sw3 = new StreamWriter(filePath3 + now + "-Kiridashi.txt", true, Encoding.UTF8);
+
+                stop_seconds = interval.Seconds + (interval.Minutes * 60) + (interval.Hours * 3600);
+                interval_seconds = stop_seconds - start_seconds;
+
+                sw3.Write("|stop|" + stop_seconds + "|interval|" + interval_seconds);
+                sw3.Write(Environment.NewLine);
+                sw3.Close();
+
+                kiridashi_cnt1++;
+
+                cnt10 = 0;
+                Button3.Content = "タグ+切出し開始";
+
+            }
         }
     }
 }
