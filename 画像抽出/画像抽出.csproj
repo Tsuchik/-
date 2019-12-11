@@ -170,5 +170,16 @@
   <ItemGroup>
     <Resource Include="Resources\TagZuke_1.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\b01_Tag_Kiridasi_Pointset.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\b01_Tag_Kiridasi_Pointset_Shasen.png" />
+    <Resource Include="Resources\b02_Kiridasi_MotoFile.png" />
+    <Resource Include="Resources\b03_Kiridasi_TagFile.png" />
+    <Resource Include="Resources\b04_Kiridasi_jikkou.png" />
+    <Resource Include="Resources\Douga_Kiridasi.png" />
+    <Resource Include="Resources\Tag_chushutu.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

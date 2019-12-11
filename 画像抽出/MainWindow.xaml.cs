@@ -15,13 +15,15 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Security.Permissions;
 using System.IO;
 using Microsoft.Win32;  //ファイル選択ダイアログ使用のため追加
 using System.Text.RegularExpressions;  //ファイルから文字列を検索するためのメソッドを呼び出すため追加
 using System.Runtime.InteropServices;  //マウスクリックイベント処理のため追加
 using Microsoft.VisualBasic; //ソリューションエクスプローラーの参照から追加する必要がある。
 using System.Windows.Diagnostics;
-                                       /// </summary>
+
+/// </summary>
 
 
 
@@ -41,52 +43,59 @@ namespace 画像抽出
     /// </summary>
     public partial class MainWindow : Window
     {
-        public DateTime dt1 = new DateTime(2019,1,1,0,0,00);
-        public DateTime dt2;
-        public DateTime dt3;
+        public DateTime dt1 = new DateTime(2019,1,1,0,0,00); //基準時刻を設定するために使用する。
+        public DateTime dt2; //タグ設定ボタン押下時の時間を設定するために使用する。
+        public DateTime dt3; //初期時間判定用に使用する。
+        public DateTime dt4; //現時刻設定するために使用する。
 
-        public string now;
-        public string filePath2;
-        public string filePath3;
-        public string comboValue1;
-        public string comboValue2;
-        public string comboValue3;
-        public string comboValue4;
-        public string comboValue5;
-        public string comboValue6;
-        public string comboValue7;
-        public string comboValue8;
-        public string line1;
-        public string line2;
-        public string line3;
-        public string line4;
-        public string line5;
-        public string filename1;
-        public string filename2;
-        public string str_start_seconds;
-        public string str_stop_seconds;
-        public string str_interval_seconds;
-        public string output_folder;
+        public string now; //基準時刻を"yyyyMMddHHmmss"に変換して設定するように使用する。
+        public string filePath2; //@"C:\TagAdding\TagDate\";
+        public string filePath3; //@"C:\TagAdding\Kiridashi\"
+        public string comboValue2; //タグ設定時に②H名前の情報を設定するために使用する。
+        public string comboValue3; //タグ設定時に①Hチームの情報を設定するために使用する。
+        public string comboValue4; //タグ設定時に⑤回数の情報を設定するために使用する。
+        public string comboValue5; //タグ設定時に⑥カウントの情報を設定するために使用する。
+        public string comboValue6; //タグ設定時に⑦球速の情報を設定するために使用する。
+        public string comboValue7; //タグ設定時に③Vチームの情報を設定するために使用する。
+        public string comboValue8; //タグ設定時に④V名前の情報を設定するために使用する。
+        public string line1; //Name-List1に記載されている名前をホームチーム用名前リストに表示する際に使用する。
+        public string line2; //Name-List2に記載されている名前をビジターチーム用名前リストに表示する際に使用する。
+        public string line3; //タグ抽出時の③に表示される名前リストを格納するために使用する。
+        public string line4; //タグ抽出時の④にて抽出する情報を1行ずつ格納するために使用する。
+        public string line5; //動画切り出し時に切出し用の情報1行を格納するために使用する。
+        public string filename1; // 動画切り出し時に使用する抽出元ファイル名を設定するために使用する。
+        public string file_KiridashiTag; // 動画切り出し時に使用する抽出用タグファイル名を設定するために使用する。
+        public string[] file_MP4 = new string[7]; // 動画切り出し時に使用する抽出元ファイル名(複数)を設定するために使用する。なお、カメラ台数が想定される7としている。
+        public string[] HS_FILES; // HSカメラで撮影した動画ファイルを格納する。
+        public string str_start_seconds; // 切り出し開始時間を抽出するために指標となる文字列|start|を格納するために使用する。
+        public string str_stop_seconds; // 切り出し停止時間を抽出するために指標となる文字列|stop|を格納するために使用する。
+        public string str_interval_seconds; // 切り出し間隔を抽出するために指標となる文字列|interval|を格納するために使用する。
+        public string output_folder; // 動画切り出し用フォルダ作成時にフォルダ名として使用する文字列を格納するために使用する。
+        public string HS_folder_name; // HSカメラで撮影した動画ファイルが格納されているフォルダ名を格納する。
 
-        public StreamWriter sw2;
-        public StreamWriter sw3;
+        public StreamWriter sw2; //NWカメラ、HSカメラ用のタグ設定ファイル作成時に使用する。
+        public StreamWriter sw3; //「C:\TagAdding\TagDate」「C:\TagAdding\TagKiridashi」にファイル作成時に使用する。
 
-        public int cnt = 0;
-        public int cnt2 = 1;
-        public int cnt3 = 1;
-        public int cnt4 = 1;
-        public int cnt5 = 0;
-        public int cnt6 = 0;
-        public int cnt7 = 0;
-        public int cnt8 = 1;
-        public int cnt9 = 0;
-        public int cnt10 = 0;
-        public int cnt15 = 0;
-        public int kiridashi_cnt1 = 1;
-        public int start_seconds;
-        public int stop_seconds;
-        public int interval_seconds;
+        public int cnt = 0;  // タグファイルが作成されたかどうかを判定するために使用する。
+        public int cnt2 = 1; // hsカメラが30分ごとにファイル分割するので、その判定のために使用する。
+        public int cnt3 = 0; // 動画切り出し時のMP4ファイルを複数読み込んだ際にstring配列のカウント用に使用する。
+        public int cnt4 = 0; // 切出すために読み込んだMP4ファイル数を格納するために使用する。
+        public int cnt5 = 0; // タグ抽出時の該当件数をカウントするために使用する。
+        public int cnt6 = 0; // タグ抽出処理時に抽出元の動画ファイルが選択されているかどうかを判定するために使用する。
+        public int cnt7 = 0; // タグ抽出処理時に切出し時間ファイルが選択されているかどうかを判定するために使用する。
+        public int cnt8 = 0; // 動画切り出し時の進捗バーの表示用に使用する。(分子)
+        public int cnt9 = 0; // 動画切り出し処理時に事前に同一フォルダ名やファイル名が存在するかどうか判定するために使用する。
+        public int cnt10 = 0; // 動画切り出しポイントの開始と終了を判定するために使用する。
+        public int cnt11 = 0; // 動画切り出し処理に進むかどうかをチェックするために使用する。
+        public int cnt16 = 0; // 動画切り出し数の総数をカウントするために使用する。
+
+        public int kiridashi_cnt1 = 1;  //動画切り出し用タグファイル作成時のカウント数を設定するために使用する。
+        public int start_seconds;       //動画切り出し用タグファイル作成時に、開始時間を設定するために使用する。
+        public int stop_seconds;        //動画切り出し用タグファイル作成時に、終了時間を設定するために使用する。
+        public int interval_seconds;    //動画切り出し用タグファイル作成時に、切り出し間隔を設定するために使用する。
         public int n; //HSカメラの倍率
+
+        public float value;
 
         private const int MOUSEEVENTF_LEFTDOWN = 0x2;
         private const int MOUSEEVENTF_LEFTUP = 0x4;
@@ -114,6 +123,7 @@ namespace 画像抽出
         {
             InitializeComponent();
 
+           
 
             //TagDateフォルダが作成されているかチェックを行う。なければ作成する。
             string folderpath1 = @"C:\TagAdding\TagDate";
@@ -127,7 +137,7 @@ namespace 画像抽出
                 DirectoryInfo di1 = new DirectoryInfo(folderpath1);
                 di1.Create();
 
-                MessageBox.Show("TagDateフォルダを作成しました。");
+                System.Windows.MessageBox.Show("TagDateフォルダを作成しました。");
             }
 
 
@@ -143,7 +153,7 @@ namespace 画像抽出
                 DirectoryInfo di3 = new DirectoryInfo(folderpath3);
                 di3.Create();
 
-                MessageBox.Show("TagListフォルダを作成しました。");
+                System.Windows.MessageBox.Show("TagListフォルダを作成しました。");
             }
 
             //Wowza-vbsフォルダが作成されているかチェックを行う。なければ作成する。
@@ -158,7 +168,7 @@ namespace 画像抽出
                 DirectoryInfo di4 = new DirectoryInfo(folderpath4);
                 di4.Create();
 
-                MessageBox.Show("Wowza-vbsフォルダを作成しました。");
+                System.Windows.MessageBox.Show("Wowza-vbsフォルダを作成しました。");
             }
 
 
@@ -176,8 +186,8 @@ namespace 画像抽出
             }
             catch
             {
-                MessageBox.Show("Name-List1ファイルが見つかりませんでした。");
-                MessageBox.Show(@"C:\TagAdding\TagList\Name-List1.txt" + "を格納してください。");
+                System.Windows.MessageBox.Show("Name-List1ファイルが見つかりませんでした。");
+                System.Windows.MessageBox.Show(@"C:\TagAdding\TagList\Name-List1.txt" + "を格納してください。");
             }
 
 
@@ -194,11 +204,11 @@ namespace 画像抽出
             }
             catch
             {
-                MessageBox.Show("Name-List2ファイルが見つかりませんでした。");
-                MessageBox.Show(@"C:\TagAdding\TagList\Name-List2.txt" + "を格納してください。");
+                System.Windows.MessageBox.Show("Name-List2ファイルが見つかりませんでした。");
+                System.Windows.MessageBox.Show(@"C:\TagAdding\TagList\Name-List2.txt" + "を格納してください。");
             }
 
-            //Wowza-vbsフォルダが作成されているかチェックを行う。なければ作成する。
+            //Kiridashiフォルダが作成されているかチェックを行う。なければ作成する。
             string folderpath5 = @"C:\TagAdding\Kiridashi";
 
             if (Directory.Exists(folderpath5))
@@ -210,7 +220,22 @@ namespace 画像抽出
                 DirectoryInfo di5 = new DirectoryInfo(folderpath5);
                 di5.Create();
 
-                MessageBox.Show("Kiridashiフォルダを作成しました。");
+                System.Windows.MessageBox.Show("Kiridashiフォルダを作成しました。");
+            }
+
+            //HS-Camerフォルダが作成されているかチェックを行う。なければ作成する。
+            string folderpath6 = @"C:\TagAdding\HS-Camera";
+
+            if (Directory.Exists(folderpath6))
+            {
+                //Folerがある場合は何もしない
+            }
+            else
+            {
+                DirectoryInfo di6 = new DirectoryInfo(folderpath6);
+                di6.Create();
+
+                System.Windows.MessageBox.Show("HS-Cameraフォルダを作成しました。");
             }
 
             comboValue3 = comboBox3.Text; //Hチーム
@@ -238,16 +263,16 @@ namespace 画像抽出
 
         private void Button_Click(object sender, RoutedEventArgs e) ///"録画開始+基準時間記録"ボタン押下時の処理
         {
-
+            
 
             if (cnt == 0)
             {
-                if (radioButton1.IsChecked == true)　//NWカメラ録画開始の場合
+                if (ComboBox10.Text == "NW Cam(x1)")　//NWカメラ録画開始の場合
                 {
                     // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
                 }
-                else if (radioButton2.IsChecked == true) //HSカメラ（×２）録画開始の場合
+                else if (ComboBox10.Text == "HS Cam(x2)") //HSカメラ（×２）録画開始の場合
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
@@ -274,7 +299,7 @@ namespace 画像抽出
 
                     }
                 }
-                else if (radioButton3.IsChecked == true) //HSカメラ（×４）録画開始の場合
+                else if (ComboBox10.Text == "HS Cam(x4)") //HSカメラ（×４）録画開始の場合
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
@@ -301,7 +326,7 @@ namespace 画像抽出
 
                     }
                 }
-                else if (radioButton4.IsChecked == true) //HSカメラ（×５）録画開始の場合
+                else if (ComboBox10.Text == "HS Cam(x5)") //HSカメラ（×５）録画開始の場合
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
@@ -328,7 +353,7 @@ namespace 画像抽出
 
                     }
                 }
-                else if (radioButton5.IsChecked == true) //HSカメラ（×１０）録画開始の場合
+                else if (ComboBox10.Text == "HS Cam(x10)") //HSカメラ（×１０）録画開始の場合
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
@@ -355,7 +380,7 @@ namespace 画像抽出
 
                     }
                 }
-                else if (radioButton6.IsChecked == true)
+                else if (ComboBox10.Text == "Multi Cam(x2)")
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
@@ -382,50 +407,17 @@ namespace 画像抽出
 
                     }
 
-                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
-
-                    // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
-                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
-
-                }
-                else if (radioButton7.IsChecked == true)
-                {
-                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
-                    {
-                        int n = 4;
-
-                        // HSカメラの録画開始メソッド呼び出し
-                        HS_REC_START_Win7(n);
-
-                    }
-                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
-                    {
-                        int n = 4;
-
-                        // HSカメラの録画開始メソッド呼び出し
-                        HS_REC_START_Win10(n);
-
-                    }
-                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
-                    {
-                        int n = 4;
-
-                        // HSカメラの録画開始メソッド呼び出し
-                        HS_REC_START_Win10(n);
-
-                    }
-
-                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+                    System.Threading.Thread.Sleep(300); // HSカメラの録画開始がNSカメラの録画より0.3秒ほど遅いのでWaitを設定
 
                     // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
 
                 }
-                else if (radioButton8.IsChecked == true)
+                else if (ComboBox10.Text == "Multi Cam(x4)")
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
-                        int n = 5;
+                        int n = 4;
 
                         // HSカメラの録画開始メソッド呼び出し
                         HS_REC_START_Win7(n);
@@ -433,7 +425,7 @@ namespace 画像抽出
                     }
                     else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
                     {
-                        int n = 5;
+                        int n = 4;
 
                         // HSカメラの録画開始メソッド呼び出し
                         HS_REC_START_Win10(n);
@@ -441,20 +433,53 @@ namespace 画像抽出
                     }
                     else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
                     {
-                        int n = 5;
+                        int n = 4;
 
                         // HSカメラの録画開始メソッド呼び出し
                         HS_REC_START_Win10(n);
 
                     }
 
-                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+                    System.Threading.Thread.Sleep(300); // HSカメラの録画開始がNSカメラの録画より0.3秒ほど遅いのでWaitを設定
 
                     // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
 
                 }
-                else if (radioButton9.IsChecked == true)
+                else if (ComboBox10.Text == "Multi Cam(x5)")
+                {
+                    if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win7(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 2) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+                    else if (System.Environment.OSVersion.Version.Major == 10 && System.Environment.OSVersion.Version.Minor == 0) //Windows10(Windows8互換性)の場合
+                    {
+                        int n = 5;
+
+                        // HSカメラの録画開始メソッド呼び出し
+                        HS_REC_START_Win10(n);
+
+                    }
+
+                    System.Threading.Thread.Sleep(300); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+
+                    // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
+                    System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
+
+                }
+                else if (ComboBox10.Text == "Multi Cam(x10)")
                 {
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
                     {
@@ -481,7 +506,7 @@ namespace 画像抽出
 
                     }
 
-                    System.Threading.Thread.Sleep(800); // HSカメラの録画開始がNSカメラの録画より0.8秒ほど遅いのでWaitを設定
+                    System.Threading.Thread.Sleep(300); // HSカメラの録画開始がNSカメラの録画より0.3秒ほど遅いのでWaitを設定
 
                     // NWカメラの録画開始(wowza録画vbsファイルの呼び出し)
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record start.vbs");
@@ -496,7 +521,7 @@ namespace 画像抽出
 
                 string result1 = dt1.ToString("HH:mm:ss");
 
-                MessageBox.Show(dt1.ToString());
+               //MessageBox.Show(dt1.ToString());
 
                 sw1.Write(result1);
 
@@ -505,23 +530,20 @@ namespace 画像抽出
                 Button2.IsEnabled = true; //録画停止ボタンを活性化
                 Button1.IsEnabled = false; //録画開始ボタンを非活性化
                 Button3.IsEnabled = true; //切り出し開始ボタンを活性化
-                Button4.IsEnabled = false; //切り出し停止ボタンを非活性化
 
-                // 全てのradioButtonを録画停止までは押せなくする
-                radioButton1.IsEnabled = false;
-                radioButton2.IsEnabled = false;
-                radioButton3.IsEnabled = false;
-                radioButton4.IsEnabled = false;
-                radioButton5.IsEnabled = false;
-                radioButton6.IsEnabled = false;
-                radioButton7.IsEnabled = false;
-                radioButton8.IsEnabled = false;
-                radioButton9.IsEnabled = false;
+                //カメラ種別を選択できなくするためにCombBox10を無効にする。
+                ComboBox10.IsEnabled = false;
+
             }
             else
             {
-                MessageBox.Show("既に録画中です。「録画停止+タグ停止」ボタンを押下してください。");
+                System.Windows.Forms.MessageBox.Show("既に録画中です。「録画停止+タグ停止」ボタンを押下してください。");
             }
+
+            // Button1が押された場合にスペースキーをForm1にて受け付けるように設定する。
+            
+            
+
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e) ///"タグ時間記録"ボタン押下時の処理
@@ -531,47 +553,52 @@ namespace 画像抽出
 
             if (dt1 == dt3)
             {
-                MessageBox.Show("基準時間が取得されていません。");
+                System.Windows.Forms.MessageBox.Show("基準時間が取得されていません。");
             }
-            else if (radioButton1.IsChecked == true)
+            else if (ComboBox10.Text == "NW Cam(x1)")
             {
-
-                nwcam_seconds_calculation();
+                if (cnt10 == 0)
+                {
+                    nwcam_seconds_calculation();
+                }
 
                 nwcam_kiridashi_time();
 
             }
-            else if (radioButton2.IsChecked == true)
+            else if (ComboBox10.Text == "HS Cam(x2)")
             {
                 n = 2;
 
                 hscam_seconds_calculation(n);
 
             }
-            else if (radioButton3.IsChecked == true)
+            else if (ComboBox10.Text == "HS Cam(x4)")
             {
                 n = 4;
 
                 hscam_seconds_calculation(n);
 
             }
-            else if (radioButton4.IsChecked == true)
+            else if (ComboBox10.Text == "HS Cam(x5)")
             {
                 n = 5;
 
                 hscam_seconds_calculation(n);
 
             }
-            else if (radioButton5.IsChecked == true)
+            else if (ComboBox10.Text == "HS Cam(x10)")
             {
                 n = 10;
 
                 hscam_seconds_calculation(n);
 
             }
-            else if (radioButton6.IsChecked == true)
+            else if (ComboBox10.Text == "Multi Cam(x2)")
             {
-                nwcam_seconds_calculation();
+                if (cnt10 == 0)
+                {
+                    nwcam_seconds_calculation();
+                }
 
                 nwcam_kiridashi_time();
 
@@ -579,9 +606,12 @@ namespace 画像抽出
 
                 hscam_seconds_calculation(n);
             }
-            else if (radioButton7.IsChecked == true)
+            else if (ComboBox10.Text == "Multi Cam(x4)")
             {
-                nwcam_seconds_calculation();
+                if (cnt10 == 0)
+                {
+                    nwcam_seconds_calculation();
+                }
 
                 nwcam_kiridashi_time();
 
@@ -589,9 +619,12 @@ namespace 画像抽出
 
                 hscam_seconds_calculation(n);
             }
-            else if (radioButton8.IsChecked == true)
+            else if (ComboBox10.Text == "Multi Cam(x5)")
             {
-                nwcam_seconds_calculation();
+                if (cnt10 == 0)
+                {
+                    nwcam_seconds_calculation();
+                }
 
                 nwcam_kiridashi_time();
 
@@ -599,9 +632,12 @@ namespace 画像抽出
 
                 hscam_seconds_calculation(n);
             }
-            else if (radioButton9.IsChecked == true)
+            else if (ComboBox10.Text == "Multi Cam(x10)")
             {
-                nwcam_seconds_calculation();
+                if (cnt10 == 0)
+                {
+                    nwcam_seconds_calculation();
+                }
 
                 nwcam_kiridashi_time();
 
@@ -610,8 +646,22 @@ namespace 画像抽出
                 hscam_seconds_calculation(n);
             }
 
-            //Button4.IsEnabled = true; //切り出し停止ボタンを活性化
-            //Button3.IsEnabled = false; //切り出し開始ボタンを非活性化
+            if (ComboBox10.Text == "NW Cam(x1)" || ComboBox10.Text == "Multi Cam(x2)" || ComboBox10.Text == "Multi Cam(x4)" || ComboBox10.Text == "Multi Cam(x5)" || ComboBox10.Text == "Multi Cam(x10)")
+            {
+                if (cnt10 == 0)
+                {
+                    Button3.Content = "切出状態：終了";
+                }
+                else if (cnt10 == 1)
+                {
+                    Button3.Content = "切出状態：開始";
+                }
+            }
+            else if (ComboBox10.Text == "HS Cam(x2)" || ComboBox10.Text == "HS Cam(x4)" || ComboBox10.Text == "HS Cam(x5)" || ComboBox10.Text == "HS Cam(x10)")
+            {
+                
+                    Button3.Content = "タグ付け";  
+            }
         }
 
 
@@ -688,18 +738,18 @@ namespace 画像抽出
                 string message = "タグファイルが作成されていません。録画停止しますか？";
                 string caption = "Delete";
 
-                MessageBoxResult result = MessageBox.Show(message, caption, MessageBoxButton.YesNo);
+                MessageBoxResult result = System.Windows.MessageBox.Show(message, caption, System.Windows.MessageBoxButton.YesNo);
 
 
                 if (result == MessageBoxResult.Yes) //タグファイル未作成+録画停止"Yes"の場合
                 {
                     //NWカメラ単独の録画停止
-                    if (radioButton1.IsChecked == true) 
+                    if (ComboBox10.Text == "NW Cam(x2)") 
                     {
                         System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
                     }
                     //HSカメラ単独の録画停止
-                    else if (radioButton2.IsChecked == true || radioButton3.IsChecked == true || radioButton4.IsChecked == true || radioButton5.IsChecked == true)
+                    else if (ComboBox10.Text == "HS Cam(x2)" || ComboBox10.Text == "HS Cam(x4)" || ComboBox10.Text == "HS Cam(x5)" || ComboBox10.Text == "HS Cam(x10)")
                     {
                         //Windows7の場合
                         if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) 
@@ -717,7 +767,7 @@ namespace 画像抽出
                             HS_REC_STOP_Win10();
                         }
                     }
-                    else if (radioButton6.IsChecked == true || radioButton7.IsChecked == true || radioButton8.IsChecked == true || radioButton9.IsChecked == true)
+                    else if (ComboBox10.Text == "Multi Cam(x2)" || ComboBox10.Text == "Multi Cam(x4)" || ComboBox10.Text == "Multi Cam(x5)" || ComboBox10.Text == "Multi Cam(x10)")
                     {
                         // NWカメラの停止処理
                         System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
@@ -749,12 +799,12 @@ namespace 画像抽出
             else if (cnt != 0) //初期化処理＋録画停止処理(タグファイル作成済みの場合)
             {
                 // NWカメラ録画停止場合
-                if (radioButton1.IsChecked == true)
+                if (ComboBox10.Text == "NW Cam(x1)")
                 {
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
                 }
                 // HSカメラ録画停止の場合
-                else if (radioButton2.IsChecked == true || radioButton3.IsChecked == true || radioButton4.IsChecked == true || radioButton5.IsChecked == true)
+                else if (ComboBox10.Text == "HS Cam(x2)" || ComboBox10.Text == "HS Cam(x4)" || ComboBox10.Text == "HS Cam(x5)" || ComboBox10.Text == "HS Cam(x10)")
                 {
                     // Windows7の場合
                     if (System.Environment.OSVersion.Version.Major == 6 && System.Environment.OSVersion.Version.Minor == 1) //Windows7の場合
@@ -773,7 +823,7 @@ namespace 画像抽出
                     }
                 }
                 //NW+HSカメラ録画停止の場合
-                else if (radioButton6.IsChecked == true || radioButton7.IsChecked == true || radioButton8.IsChecked == true || radioButton9.IsChecked == true)
+                else if (ComboBox10.Text == "Multi Cam(x2)" || ComboBox10.Text == "Multi Cam(x4)" || ComboBox10.Text == "Multi Cam(x5)" || ComboBox10.Text == "Multi Cam(x10)")
                 {
                     // NWカメラの停止処理
                     System.Diagnostics.Process p = System.Diagnostics.Process.Start(@"C:\TagAdding\Wowza-vbs\\Wowza record stop.vbs");
@@ -803,18 +853,11 @@ namespace 画像抽出
             Button2.IsEnabled = false; //録画停止ボタンを非活性化
             Button1.IsEnabled = true;  //録画再生ボタンを活性化
             Button3.IsEnabled = false; //切り出し開始ボタンを非活性化
-            Button4.IsEnabled = false; //切り出し停止ボタンを非活性化
 
-            // 録画停止したことにより全てのradioボタンを押せるようにする
-            radioButton1.IsEnabled = true;
-            radioButton2.IsEnabled = true;
-            radioButton3.IsEnabled = true;
-            radioButton4.IsEnabled = true;
-            radioButton5.IsEnabled = true;
-            radioButton6.IsEnabled = true;
-            radioButton7.IsEnabled = true;
-            radioButton8.IsEnabled = true;
-            radioButton9.IsEnabled = true;
+
+            // 録画停止したことによりカメラ種別を選択出来るようにComboBox10を有効にする。
+            ComboBox10.IsEnabled = true;
+
 
             kiridashi_cnt1 = 1;
 
@@ -831,9 +874,10 @@ namespace 画像抽出
 
         private void Button_Click_4(object sender, RoutedEventArgs e)  //①抽出するファイルパス取得ボタンの処理
         {
+
             textBox3.Clear(); //textBox3の初期値をクリア
 
-            var dialog1 = new OpenFileDialog();
+            var dialog1 = new Microsoft.Win32.OpenFileDialog();
 
             dialog1.InitialDirectory = @"C:\TagAdding\TagDate"; //フォルダ指定
 
@@ -869,12 +913,12 @@ namespace 画像抽出
 
             if (comboBox9.Text == "③名前を選択")
             {
-                MessageBox.Show("抽出する名前が選ばれていません");
+                System.Windows.MessageBox.Show("抽出する名前が選ばれていません");
             }
 
             if (textBox3.Text == "")
             {
-                MessageBox.Show("ベースタグファイルが選ばれていません");
+                System.Windows.MessageBox.Show("ベースタグファイルが選ばれていません");
             }
             else
             {
@@ -901,11 +945,11 @@ namespace 画像抽出
 
                     if (cnt5 == 0)
                     {
-                        MessageBox.Show("該当するデータがありませんでした。");
+                        System.Windows.MessageBox.Show("該当するデータがありませんでした。");
                     }
                     else
                     {
-                        MessageBox.Show("抽出完了" + " " + "該当するデータは"+cnt5+"件でした。");
+                        System.Windows.MessageBox.Show("抽出完了" + " " + "該当するデータは"+cnt5+"件でした。");
                         cnt5 = 0;
                     }
                 }
@@ -922,7 +966,7 @@ namespace 画像抽出
             comboBox9.Items.Clear();
             comboBox9.Items.Add("③名前を選択");
 
-            var dialog2 = new OpenFileDialog();
+            var dialog2 = new Microsoft.Win32.OpenFileDialog();
 
             dialog2.InitialDirectory = @"C:\TagAdding\TagList";
 
@@ -1299,9 +1343,9 @@ namespace 画像抽出
 
             seconds = milliseconds + seconds + minutes_seconds + hours_seconds;
 
-            MessageBox.Show(milliseconds.ToString());
-            MessageBox.Show(seconds.ToString());
-            MessageBox.Show(interval.ToString());
+            //MessageBox.Show(milliseconds.ToString());
+            //MessageBox.Show(seconds.ToString());
+            //MessageBox.Show(interval.ToString());
 
             while (seconds >= 1801)
             {
@@ -1379,52 +1423,51 @@ namespace 画像抽出
             sw2.Close();
         }
 
-        private void Button_Click_7(object sender, RoutedEventArgs e)
-        {
-            DateTime dt3 = DateTime.Now;
 
-            TimeSpan interval = dt3 - dt1;
-
-            // 動画切り出し開始ポイント処理
-            filePath3 = @"C:\TagAdding\Kiridashi\";
-            sw3 = new StreamWriter(filePath3 + now + "-Kiridashi.txt", true, Encoding.UTF8);
-
-            stop_seconds = interval.Seconds + (interval.Minutes * 60) + (interval.Hours * 3600);
-            interval_seconds = stop_seconds - start_seconds;
-
-            sw3.Write("|stop|" + stop_seconds + "|interval|" + interval_seconds);
-            sw3.Write(Environment.NewLine);
-            sw3.Close();
-
-            kiridashi_cnt1++;
-
-            Button3.IsEnabled = true; //切り出し開始ボタンを活性化
-            Button4.IsEnabled = false; //切り出し停止ボタンを非活性化
-        }
 
         private void Button_Click_9(object sender, RoutedEventArgs e)
         {
             // 抽出用元の動画ファイル名を取り込む処理
-            var dialog3 = new OpenFileDialog();
+            var dialog3 = new Microsoft.Win32.OpenFileDialog();
+
+            dialog3.Multiselect = true;
 
             dialog3.InitialDirectory = @"C:\TagAdding\Kiridashi"; //フォルダ指定
 
             dialog3.Title = "抽出元の動画ファイルを選んでください"; //ダイアログタイトル指定
 
-            dialog3.Filter = "全てのファイル(*.*)|*.*";
+            dialog3.Filter = "MP4ファイル(*.MP4)|*.MP4|全てのファイル(*.*)|*.*";
 
             if (dialog3.ShowDialog() == true)
             {
-                System.Diagnostics.Trace.WriteLine(dialog3.FileName);
-                filename1 = dialog3.FileName;
-                cnt6 = 1;
+                if (dialog3.FileNames.Length < 8)
+                {
+                    System.Diagnostics.Trace.WriteLine(dialog3.FileName);
+                    cnt4 = dialog3.FileNames.Length;
+                    cnt6 = 1;
+
+                    for (cnt3 = 0; cnt3 < dialog3.FileNames.Length; cnt3++)
+                    {
+                        file_MP4[cnt3] = dialog3.FileNames[cnt3];
+
+                        System.Diagnostics.Trace.WriteLine(dialog3.FileNames.Length);
+                        System.Diagnostics.Trace.WriteLine(cnt3);
+                        //System.Diagnostics.Trace.WriteLine(dialog3.FileNames[cnt3]);
+                        //System.Diagnostics.Trace.WriteLine(file_MP4[cnt3]);
+                    }
+                }
+                else
+                {
+                    System.Windows.MessageBox.Show("ファイル数が8ファイル以上選ばれています。7以下としてください。");
+                }
+
             }
         }
 
         private void Button_Click_10(object sender, RoutedEventArgs e)
         {
             // 抽出用の切り出しタグファイル名を取り込む処理
-            var dialog4 = new OpenFileDialog();
+            var dialog4 = new Microsoft.Win32.OpenFileDialog();
 
             dialog4.InitialDirectory = @"C:\TagAdding\Kiridashi"; //フォルダ指定
 
@@ -1435,112 +1478,155 @@ namespace 画像抽出
             if (dialog4.ShowDialog() == true)
             {
                 System.Diagnostics.Trace.WriteLine(dialog4.FileName);
-                filename2 = dialog4.FileName;
+                file_KiridashiTag = dialog4.FileName;
                 cnt7 = 1;
-            }
-        }
 
-        private void Button_Click_11(object sender, RoutedEventArgs e)
-        {
-            if (cnt6 == 0)
-            {
-                MessageBox.Show("抽出元のMP4ファイルが選択されていません。");
-            }
-            else if (cnt7 == 0)
-            {
-                MessageBox.Show("抽出用の時間ファイルが選択されていません。");
-            }
-            else
-            {
-                var outputfile = "";
-                var outputfile2 = "";
+                ProgressBar1.Value = 0;
+                textBox4.Clear();
+                value = 0;
+                cnt16 = 0;
 
-                //抽出元ファイルのファイル名から.mp4/.MP4を削除
-                outputfile = filename1.Replace(".MP4", "");
-                outputfile = outputfile.Replace(".mp4", "");
-
-                output_folder = outputfile;
-
-                if (Directory.Exists(output_folder))
+                // 動画切り出し数の総数をカウントする
+                StreamReader file6 = new StreamReader(file_KiridashiTag, Encoding.Default);
                 {
-                    MessageBox.Show("動画切出し用フォルダが既に存在します。");
-                    cnt9 = 1;
-                }
-                else if (File.Exists(output_folder))
-                {
-                    MessageBox.Show("動画切出し用フォルダと同一ファイル名が存在するため、フォルダが作成できません。");
-                    cnt9 = 1;
-                }
-                else
-                {
-                    DirectoryInfo di6 = new DirectoryInfo(output_folder );
-                    di6.Create();
-
-                    MessageBox.Show("動画切出し用フォルダを作成しました。");
-                    cnt9 = 0;
-
-                }
-
-                if (cnt9 == 0)
-                {
-                    cnt8 = 1;
-                    string outputfile_name = System.IO.Path.GetFileName(filename1);
-
-                    outputfile_name = outputfile_name.Replace(".MP4", "");
-                    outputfile_name = outputfile_name.Replace(".mp4", "");
-
-                    StreamReader file5 = new StreamReader(filename2, Encoding.Default);
+                    while ((file6.ReadLine()) != null)
                     {
-                        while ((line5 = file5.ReadLine()) != null)
-                        {
-                            string str_start_seconds = "|start|";
-                            string str_stop_seconds = "|stop|";
-                            string str_interval_seconds = "|interval|";
-                            string filename_add = "";
-
-                            //切出し開始時間抽出関数呼び出し
-                            string StartSeconds = GetStartSeconds(str_start_seconds, str_stop_seconds, line5);
-                            System.Diagnostics.Trace.WriteLine(StartSeconds);
-                            System.Diagnostics.Trace.WriteLine(line5);
-
-                            //切出し時間抽出関数呼び出し
-                            string IntervalSeconds = GetIntervalSeconds(str_interval_seconds, line5);
-                            System.Diagnostics.Trace.WriteLine(IntervalSeconds);
-
-                            string str_cnt8 = String.Format("{0:000}", cnt8);
-
-                            //ffmpegの仕様でフォルダ名+ファイル名を指定する場合にフォルダ名に空白がある場合は""で囲む必要がある
-                            outputfile2 = "\"" + output_folder + "\\" + outputfile_name + "-" + str_cnt8 + ".MP4\"" ;
-                            filename_add = "\"" + filename1 +"\"";
-
-                            // ffpmegにて切出しを実施
-                            var arguments = string.Format("-ss {0} -i {1} -t {2} {3}", StartSeconds ,filename_add , IntervalSeconds, outputfile2);
-                            //MessageBox.Show(arguments);
-
-                            if (IntervalSeconds != "0")
-                            {
-                                System.Diagnostics.Process pro = new System.Diagnostics.Process();
-                                pro.StartInfo.FileName = "ffmpeg.exe";
-                                pro.StartInfo.Arguments = arguments;
-                                pro.StartInfo.CreateNoWindow = true;
-                                pro.StartInfo.UseShellExecute = false;
-                                System.Diagnostics.Trace.WriteLine(arguments);
-                                pro.Start();
-                                pro.WaitForExit();
-                            }
-
-
-                            cnt8++;
-                            cnt6 = 0;
-                            cnt7 = 0;
-                        }
-                        MessageBox.Show("動画切出し完了");
+                        cnt16++;
                     }
                 }
 
             }
 
 
+        }
+
+        private void Button_Click_11(object sender, RoutedEventArgs e)
+        {
+            ProgressBar1.Minimum = 0;
+            ProgressBar1.Maximum = 0;// cnt16 * (cnt4 - cnt9));
+            ProgressBar1.Value = 0;
+
+            if (cnt6 == 0)
+            {
+                System.Windows.MessageBox.Show("抽出元のMP4ファイルが選択されていません。");
+            }
+            else if (cnt7 == 0)
+            {
+                System.Windows.MessageBox.Show("抽出用の時間ファイルが選択されていません。");
+            }
+            else
+            {
+
+                for (int num = 0; num < cnt4; num++)
+                {
+
+
+                    var outputfile = "";
+                    var outputfile2 = "";
+
+                    //抽出元ファイルのファイル名から.mp4/.MP4を削除
+                    outputfile = file_MP4[num].Replace(".MP4", "");
+                    outputfile = outputfile.Replace(".mp4", "");
+
+                    output_folder = outputfile;
+
+                    if (Directory.Exists(output_folder))
+                    {
+                        System.Windows.MessageBox.Show("動画切出し用フォルダ" + outputfile + "が既に存在します。");
+                        cnt9 ++;
+
+                    }
+                    else if (File.Exists(output_folder))
+                    {
+                        System.Windows.MessageBox.Show("動画切出し用フォルダと同一ファイル名" + outputfile + "が存在するため、フォルダが作成できません。") ;
+                        cnt9 ++;
+
+                    }
+                    else
+                    {
+                        DirectoryInfo di6 = new DirectoryInfo(output_folder);
+                        di6.Create();
+
+                        string outputfile_name = System.IO.Path.GetFileName(file_MP4[num]);
+
+                        outputfile_name = outputfile_name.Replace(".MP4", "");
+                        outputfile_name = outputfile_name.Replace(".mp4", "");
+
+                        StreamReader file5 = new StreamReader(file_KiridashiTag, Encoding.Default);
+                        {
+                            while ((line5 = file5.ReadLine()) != null)
+                            {
+                                cnt8++;
+                                string str_start_seconds = "|start|";
+                                string str_stop_seconds = "|stop|";
+                                string str_interval_seconds = "|interval|";
+                                string filename_add = "";
+
+                                //切出し開始時間抽出関数呼び出し
+                                string StartSeconds = GetStartSeconds(str_start_seconds, str_stop_seconds, line5);
+                                //System.Diagnostics.Trace.WriteLine(StartSeconds);
+                                //System.Diagnostics.Trace.WriteLine(line5);
+
+                                //切出し時間抽出関数呼び出し
+                                string IntervalSeconds = GetIntervalSeconds(str_interval_seconds, line5);
+                                //System.Diagnostics.Trace.WriteLine(IntervalSeconds);
+
+                                string str_cnt8 = String.Format("{0:000}", cnt8);
+
+                                //ffmpegの仕様でフォルダ名+ファイル名を指定する場合にフォルダ名に空白がある場合は""で囲む必要がある
+                                outputfile2 = "\"" + output_folder + "\\" + outputfile_name + "-" + str_cnt8 + ".MP4\"";
+                                filename_add = "\"" + file_MP4[num] + "\"";
+
+                                // ffpmegにて切出しを実施
+                                var arguments = string.Format("-ss {0} -i {1} -t {2} {3}", StartSeconds, filename_add, IntervalSeconds, outputfile2);
+                                //MessageBox.Show(arguments);
+
+                                if (IntervalSeconds != "0")
+                                {
+                                    System.Diagnostics.Process pro = new System.Diagnostics.Process();
+                                    pro.StartInfo.FileName = "ffmpeg.exe";
+                                    pro.StartInfo.Arguments = arguments;
+                                    pro.StartInfo.CreateNoWindow = true;
+                                    pro.StartInfo.UseShellExecute = false;
+                                    //System.Diagnostics.Trace.WriteLine(arguments);
+                                    pro.Start();
+                                    pro.WaitForExit();
+                                }
+                            }
+
+                        }
+                    }
+                    ProgressBar1.Value = cnt8;
+                    System.Diagnostics.Trace.WriteLine("ProgressBar1.Value = " + ProgressBar1.Value);
+                    System.Diagnostics.Trace.WriteLine("cnt8 = " + cnt8);
+
+                    float value = ((float)cnt8 * 100) / (cnt16 * (cnt4 - cnt9));
+                    System.Diagnostics.Trace.WriteLine("cnt4 = " + cnt4);
+                    System.Diagnostics.Trace.WriteLine("cnt9 = " + cnt9);
+
+                    if (cnt9 != 7)
+                    {
+                        textBox4.Text = value.ToString() + "%";
+                    }
+                    else
+                    {
+                        System.Windows.MessageBox.Show("切出し実施可能なファイルはありませんでした。");
+                    }
+
+                    System.Windows.Forms.Application.DoEvents();
+
+                }
+                System.Diagnostics.Trace.WriteLine("cnt9 = " + cnt9);
+
+                if (cnt8 != 0)
+                {
+                    System.Windows.MessageBox.Show("動画切出し完了");
+                }
+                cnt9 = 0;
+                cnt8 = 0;
+                cnt6 = 0;
+                cnt7 = 0;
+            }
         }
         private string GetStartSeconds(string str_start_seconds, string str_stop_seconds, string line5)
         {
@@ -1651,7 +1737,7 @@ namespace 画像抽出
             }
             else if (n == 5)
             {
-                SendMessage(hWndc11, CB_SELSTRING, -1, "360 FPS (640x360)"); //ComboBox 360FPS選択
+                SendMessage(hWndc11, CB_SELSTRING, -1, "300 FPS (640x360)"); //ComboBox 300FPS選択
             }
             else if (n == 10)
             {
@@ -1722,7 +1808,9 @@ namespace 画像抽出
                 sw3.Close();
 
                 cnt10 = 1;
-                Button3.Content = "タグ+切出し停止";
+                //Button3.Content = "タグ+切出し停止";
+                //System.Drawing.Image img = System.Drawing.Image.FromFile("Resources / TagZuke_1.png");
+
             }
             else if (cnt10 == 1)
             {
@@ -1740,9 +1828,225 @@ namespace 画像抽出
                 kiridashi_cnt1++;
 
                 cnt10 = 0;
-                Button3.Content = "タグ+切出し開始";
-
+               
             }
         }
+
+        private void Form1_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            System.Windows.Forms.Keys aa = e.KeyCode;
+
+            switch (aa)
+            {
+                case System.Windows.Forms.Keys.ShiftKey:
+                    Console.WriteLine("Shiftが押されました");
+                    break;
+                case System.Windows.Forms.Keys.Menu:
+                    Console.WriteLine("Altが押されました");
+                    break;
+                case System.Windows.Forms.Keys.Enter:
+                    Console.WriteLine("Enterが押されました");
+                    break;
+                case System.Windows.Forms.Keys.Space:
+                    Console.WriteLine("Spaceが押されました");
+                    break;
+                default:
+                    Console.WriteLine("その他が押されました");
+                    break;
+            }
+        }
+
+        private void Button_Click_7(object sender, RoutedEventArgs e)
+        {
+            
+            
+        }
+
+        private void TextBox_TextChanged_3(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox5_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox4_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void ProgressBar1_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
+
+        private void ComboBox10_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: NW Cam(x1)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: Multi Cam(x2)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: Multi Cam(x4)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: Multi Cam(x5)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: Multi Cam(x10)")
+            {
+                Button3.Content = "タグ＋切出しポイント記録";
+                Console.WriteLine(ComboBox10.SelectedItem.ToString());
+            }
+            else if (ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: HS Cam(x2)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: HS Cam(x4)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: HS Cam(x5)" || ComboBox10.SelectedItem.ToString() == "System.Windows.Controls.ListBoxItem: HS Cam(x10)")
+            {
+                Button3.Content = "切出しポイント記録";
+                Console.WriteLine(ComboBox10.SelectedItem.ToString());
+            }
+
+        }
+
+        private void TextBox1_TextChanged(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void TextBox_TextChanged_4(object sender, TextChangedEventArgs e)
+        {
+
+        }
+
+        private void Button_Click_12(object sender, RoutedEventArgs e)
+        {
+            var dialog5 = new System.Windows.Forms.FolderBrowserDialog();
+
+            dialog5.SelectedPath = @"C:\TagAdding\HS-Camera"; //フォルダ指定
+
+            dialog5.Description= "HSカメラ動画ファイルの格納フォルダを選んでください"; //ダイアログタイトル指定
+
+            dialog5.ShowNewFolderButton = true;
+
+            if (dialog5.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                Console.WriteLine(dialog5.SelectedPath);
+                HS_folder_name = dialog5.SelectedPath;
+
+                HS_FILES = System.IO.Directory.GetFiles(HS_folder_name, "*", System.IO.SearchOption.AllDirectories);
+                Console.WriteLine(HS_FILES[0]);
+                Console.WriteLine(HS_FILES.Length);
+
+                dt4 = DateTime.Now;
+
+                string result2 = dt4.ToString("yyyyMMddHHmmss");
+                Console.WriteLine(result2);
+
+
+                StreamWriter sw5_1 = new StreamWriter(@"C:\TagAdding\HS-Camera\" + result2 + "_CAM01.txt", true, Encoding.Default);
+                StreamWriter sw5_2 = new StreamWriter(@"C:\TagAdding\HS-Camera\" + result2 + "_CAM02.txt", true, Encoding.Default);
+                StreamWriter sw5_3 = new StreamWriter(@"C:\TagAdding\HS-Camera\" + result2 + "_CAM03.txt", true, Encoding.Default);
+                StreamWriter sw5_4 = new StreamWriter(@"C:\TagAdding\HS-Camera\" + result2 + "_CAM04.txt", true, Encoding.Default);
+
+                for (int i = 0; i < HS_FILES.Length; i++)
+                {
+
+
+                    if (0 <= HS_FILES[i].IndexOf("CAM01"))
+                    {
+                        sw5_1.Write("file '");
+                        sw5_1.Write(HS_FILES[i]);
+                        sw5_1.Write("'");
+                        sw5_1.Write(Environment.NewLine);
+                    }
+                    else if (0 <= HS_FILES[i].IndexOf("CAM02"))
+                    {
+                        sw5_2.Write("file '");
+                        sw5_2.Write(HS_FILES[i]);
+                        sw5_2.Write("'");
+                        sw5_2.Write(Environment.NewLine);
+                    }
+                    else if (0 <= HS_FILES[i].IndexOf("CAM03"))
+                    {
+                        sw5_3.Write("file '");
+                        sw5_3.Write(HS_FILES[i]);
+                        sw5_3.Write("'");
+                        sw5_3.Write(Environment.NewLine);
+                    }
+                    else if (0 <= HS_FILES[i].IndexOf("CAM04"))
+                    {
+                        sw5_4.Write("file '");
+                        sw5_4.Write(HS_FILES[i]);
+                        sw5_4.Write("'");
+                        sw5_4.Write(Environment.NewLine);
+                    }
+                }
+
+                sw5_1.Close();
+                sw5_2.Close();
+                sw5_3.Close();
+                sw5_4.Close();
+
+                // CAM01用の動画ファイル統合処理
+                var arguments_1 = string.Format("-f concat -safe 0 -i {0} -c copy {1}",@"C:\TagAdding\HS-Camera\" + result2 + "_CAM01.txt", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM01.MP4");
+
+                System.Diagnostics.Process pro2_1 = new System.Diagnostics.Process();
+                pro2_1.StartInfo.FileName = "ffmpeg.exe";
+                pro2_1.StartInfo.Arguments = arguments_1;
+                pro2_1.StartInfo.CreateNoWindow = true;
+                pro2_1.StartInfo.UseShellExecute = false;
+                System.Diagnostics.Trace.WriteLine(arguments_1);
+                pro2_1.Start();
+                pro2_1.WaitForExit();
+
+                // CAM02用の動画ファイル統合処理
+                var arguments_2 = string.Format("-f concat -safe 0 -i {0} -c copy {1}", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM02.txt", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM02.MP4");
+
+                System.Diagnostics.Process pro2_2 = new System.Diagnostics.Process();
+                pro2_2.StartInfo.FileName = "ffmpeg.exe";
+                pro2_2.StartInfo.Arguments = arguments_2;
+                pro2_2.StartInfo.CreateNoWindow = true;
+                pro2_2.StartInfo.UseShellExecute = false;
+                System.Diagnostics.Trace.WriteLine(arguments_2);
+                pro2_2.Start();
+                pro2_2.WaitForExit();
+
+                // CAM03用の動画ファイル統合処理
+                var arguments_3 = string.Format("-f concat -safe 0 -i {0} -c copy {1}", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM03.txt", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM03.MP4");
+
+                System.Diagnostics.Process pro2_3 = new System.Diagnostics.Process();
+                pro2_3.StartInfo.FileName = "ffmpeg.exe";
+                pro2_3.StartInfo.Arguments = arguments_3;
+                pro2_3.StartInfo.CreateNoWindow = true;
+                pro2_3.StartInfo.UseShellExecute = false;
+                System.Diagnostics.Trace.WriteLine(arguments_3);
+                pro2_3.Start();
+                pro2_3.WaitForExit();
+
+                // CAM04用の動画ファイル統合処理
+                var arguments_4 = string.Format("-f concat -safe 0 -i {0} -c copy {1}", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM04.txt", @"C:\TagAdding\HS-Camera\" + result2 + "_CAM04.MP4");
+
+                System.Diagnostics.Process pro2_4 = new System.Diagnostics.Process();
+                pro2_4.StartInfo.FileName = "ffmpeg.exe";
+                pro2_4.StartInfo.Arguments = arguments_4;
+                pro2_4.StartInfo.CreateNoWindow = true;
+                pro2_4.StartInfo.UseShellExecute = false;
+                System.Diagnostics.Trace.WriteLine(arguments_4);
+                pro2_4.Start();
+                pro2_4.WaitForExit();
+
+            }
+            else
+            {
+                Console.WriteLine("キャンセルされました。");
+            }
+
+        }
+
+        // WPFでKeyPreviewプロパティをTrueにするための設定
+        private void Window_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            int k = 0;
+
+           if (e.Key == Key.Space)
+            {
+                Console.WriteLine("Ｋｅｙ読み込まれました" + k++);
+
+                Button_Click_1(sender,e);
+
+
+            }
+
+        }
+
     }
 }
